@@ -72,12 +72,6 @@
                    displayName="Test Files"
                    projectFiles="false"
                    kind="TEST_LOGICAL_FOLDER">
-      <logicalFolder name="f1"
-                     displayName="managedFileTest"
-                     projectFiles="true"
-                     kind="TEST">
-        <itemPath>tests/managedFileTest.cpp</itemPath>
-      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -150,11 +144,6 @@
       <item path="src/addins/mysql/sqlMapper.cpp" ex="false" tool="1" flavor2="0">
         <ccTool>
           <additionalDep></additionalDep>
-        </ccTool>
-      </item>
-      <item path="tests/managedFileTest.cpp" ex="false" tool="1" flavor2="0">
-        <ccTool>
-          <developmentMode>1</developmentMode>
         </ccTool>
       </item>
     </conf>

@@ -2,5 +2,5 @@
 .dep.inc
 config/site.php
 files/cache/*
-libs/*
+libs/boost_1_51_0
 build/
