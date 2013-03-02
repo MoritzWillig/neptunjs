@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.cnd.makeproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/make-project/1">
+            <name>NeptunJS</name>
+            <c-extensions/>
+            <cpp-extensions>cpp</cpp-extensions>
+            <header-extensions>h</header-extensions>
+            <sourceEncoding>UTF-8</sourceEncoding>
+            <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>src/v8/src</sourceRootElem>
+                <sourceRootElem>src/mapper</sourceRootElem>
+                <sourceRootElem>src/dynv8</sourceRootElem>
+                <sourceRootElem>src/addins</sourceRootElem>
+                <sourceRootElem>libs/boost_1_51_0</sourceRootElem>
+                <sourceRootElem>libs/mysqlconnector32bit/include</sourceRootElem>
+                <sourceRootElem>src/etc</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>Debug</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Release</name>
+                    <type>1</type>
+                </confElem>
+            </confList>
+        </data>
+    </configuration>
+</project>

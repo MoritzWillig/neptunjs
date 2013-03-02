@@ -1,2 +1,6 @@
+.directory
+.dep.inc
 config/site.php
 files/cache/*
+libs/*
+build/

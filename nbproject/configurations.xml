@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="84">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <logicalFolder name="src" displayName="src" projectFiles="true">
+        <logicalFolder name="addins" displayName="addins" projectFiles="true">
+          <logicalFolder name="basicAddin" displayName="basicAddin" projectFiles="true">
+            <itemPath>src/addins/basicAddin/BasicAddin.cpp</itemPath>
+            <itemPath>src/addins/basicAddin/BasicAddin.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="file" displayName="file" projectFiles="true">
+            <itemPath>src/addins/file/fileMapper.cpp</itemPath>
+            <itemPath>src/addins/file/fileMapper.h</itemPath>
+            <itemPath>src/addins/file/managedFile.cpp</itemPath>
+            <itemPath>src/addins/file/managedFile.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="mysql" displayName="mysql" projectFiles="true">
+            <itemPath>src/addins/mysql/managedSql.cpp</itemPath>
+            <itemPath>src/addins/mysql/managedSql.h</itemPath>
+            <itemPath>src/addins/mysql/sqlMapper.cpp</itemPath>
+            <itemPath>src/addins/mysql/sqlMapper.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="outputBuffer"
+                         displayName="outputBuffer"
+                         projectFiles="true">
+            <itemPath>src/addins/outputBuffer/outputBuffer.cpp</itemPath>
+            <itemPath>src/addins/outputBuffer/outputBuffer.h</itemPath>
+            <itemPath>src/addins/outputBuffer/outputBufferMapper.cpp</itemPath>
+            <itemPath>src/addins/outputBuffer/outputBufferMapper.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="permission" displayName="permission" projectFiles="true">
+            <itemPath>src/addins/permission/permissionMapper.cpp</itemPath>
+            <itemPath>src/addins/permission/permissionMapper.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="script" displayName="script" projectFiles="true">
+            <itemPath>src/addins/script/managedScript.cpp</itemPath>
+            <itemPath>src/addins/script/managedScript.h</itemPath>
+            <itemPath>src/addins/script/script.cpp</itemPath>
+            <itemPath>src/addins/script/script.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="etc" displayName="etc" projectFiles="true">
+          <itemPath>src/etc/SysFunctions.cpp</itemPath>
+          <itemPath>src/etc/SysFunctions.h</itemPath>
+          <itemPath>src/etc/cppExt.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="mapper" displayName="mapper" projectFiles="true">
+          <itemPath>src/mapper/PermissionChecks.cpp</itemPath>
+          <itemPath>src/mapper/PermissionChecks.h</itemPath>
+          <itemPath>src/mapper/macros.h</itemPath>
+        </logicalFolder>
+        <itemPath>src/addins.h</itemPath>
+      </logicalFolder>
+      <itemPath>src/Permission.cpp</itemPath>
+      <itemPath>src/Permission.h</itemPath>
+      <itemPath>src/abstractNative.cpp</itemPath>
+      <itemPath>src/abstractNative.h</itemPath>
+      <itemPath>src/internalObjects.h</itemPath>
+      <itemPath>src/main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f1"
+                     displayName="managedFileTest"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/managedFileTest.cpp</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>src/v8/src</Elem>
+    <Elem>src/mapper</Elem>
+    <Elem>src/dynv8</Elem>
+    <Elem>src/addins</Elem>
+    <Elem>libs/boost_1_51_0</Elem>
+    <Elem>libs/mysqlconnector32bit/include</Elem>
+    <Elem>src/etc</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+        <rebuildPropChanged>true</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <commandlineTool>gccBLABLABLA</commandlineTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+          <useLinkerLibraries>false</useLinkerLibraries>
+        </cTool>
+        <ccTool>
+          <architecture>2</architecture>
+          <commandlineTool>g++</commandlineTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+            <pElem>libs/boost_1_51_0</pElem>
+            <pElem>libs/mysqlconnector64bit/include</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>bin/neptunjsx64</output>
+          <linkerDynSerch>
+            <pElem>libs</pElem>
+            <pElem>libs/mysqlconnector64bit/lib</pElem>
+          </linkerDynSerch>
+          <commandlineTool>g++</commandlineTool>
+          <linkerLibItems>
+            <linkerLibFileItem>libs/v8_64bit/out/x64.release/obj.target/tools/gyp/libv8_base.a</linkerLibFileItem>
+            <linkerLibFileItem>libs/v8_64bit/out/x64.release/obj.target/tools/gyp/libv8_snapshot.a</linkerLibFileItem>
+            <linkerLibFileItem>libs/mysqlconnector64bit/lib/libmysqlcppconn.so</linkerLibFileItem>
+          </linkerLibItems>
+          <commandLine>-pthread -lrt -ldl</commandLine>
+        </linkerTool>
+      </compileType>
+      <folder path="TestFiles/f1">
+        <ccTool>
+          <incDir>
+            <pElem>src</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+      <item path="src/addins/mysql/sqlMapper.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <additionalDep></additionalDep>
+        </ccTool>
+      </item>
+      <item path="tests/managedFileTest.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <developmentMode>1</developmentMode>
+        </ccTool>
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
