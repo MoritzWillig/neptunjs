@@ -5,7 +5,7 @@
  * Created on August 18, 2012, 3:32 AM
  */
 
-#include "../libs/v8/include/v8.h"
+#include "../libs/v8_64bit/include/v8.h"
 #include <assert.h>
 #include <algorithm>
 #include <fcntl.h>
@@ -150,7 +150,7 @@ char* detag(char* str, const char* pre_repl, const char* app_repl) {
     int bufferSize=strlen(str);
     int singleAdd=strlen(pre_repl)+strlen(app_repl);
     
-    for (int i=0; i<strlen(str)-5; i++) { //-strlen("<?js?>")+1
+    for (int i=0; i<strlen(str); i++) {
         if ((str[i+0]=='<') and (str[i+1]=='?') and (str[i+2]=='j') and (str[i+3]=='s')) {
             
             b.push_back(i);
@@ -163,7 +163,11 @@ char* detag(char* str, const char* pre_repl, const char* app_repl) {
             e.push_back(j);
             i=j+2;
         }
-        if (str[i]=='"') { bufferSize+=1; } //backslashes have to be encoded
+        
+        //qutotations, backslashes, tabs and new lines have to be encoded
+        if ((str[i]=='\\' ) or (str[i]=='"' ) or (str[i]=='\t') or (str[i]=='\n') or (str[i]=='\r')) {
+            bufferSize+=1;
+        }
     }
     bufferSize+=singleAdd*(b.size()+1)-(b.size()*6);
     b.push_back(strlen(str));
@@ -172,16 +176,23 @@ char* detag(char* str, const char* pre_repl, const char* app_repl) {
     
     int c=0; //ret current char index
     int d=0; //str current char index
+    
     //copy first string
-    if (e.size()!=0) {
-        memcpy(&ret[c],&pre_repl[0],strlen(pre_repl)); c+=strlen(pre_repl);
-        for (; d<b[0]; d++) {
-            if (str[d]=='"') { ret[c]='\\'; c++; }
-            ret[c]=str[d];
-            c++;
-        } d+=4; //jump over "<?js"
-        memcpy(&ret[c],&app_repl[0],strlen(app_repl)); c+=strlen(app_repl);
-    }
+    int firstStrEnd=(e.size()==0)?strlen(str):b[0];
+    memcpy(&ret[c],&pre_repl[0],strlen(pre_repl)); c+=strlen(pre_repl);
+    for (; d<firstStrEnd; d++) {
+        switch (str[d]) {
+                case '\\':
+                case '"' : ret[c]='\\'; c++; ret[c]=str[d]; break;
+                case '\t': ret[c]='\\'; c++; ret[c]='t'   ; break;
+                case '\n': ret[c]='\\'; c++; ret[c]='n'   ; break;
+                case '\r': ret[c]='\\'; c++; ret[c]='r'   ; break;
+            default: ret[c]=str[d];
+        }
+        
+        c++;
+    } d+=4; //jump over "<?js"
+    memcpy(&ret[c],&app_repl[0],strlen(app_repl)); c+=strlen(app_repl);
     
     for (int i=0; i<e.size(); i++) {
         //copy js code
@@ -192,8 +203,15 @@ char* detag(char* str, const char* pre_repl, const char* app_repl) {
         //copy string code
         memcpy(&ret[c],&pre_repl[0],strlen(pre_repl)); c+=strlen(pre_repl);
         for (; d<b[i+1]; d++) {
-            if (str[d]=='"') { ret[c]='\\'; c++; }
-            ret[c]=str[d];
+            switch (str[d]) {
+                    case '\\':
+                    case '"' : ret[c]='\\'; c++; ret[c]=str[d]; break;
+                    case '\t': ret[c]='\\'; c++; ret[c]='t'   ; break;
+                    case '\n': ret[c]='\\'; c++; ret[c]='n'   ; break;
+                    case '\r': ret[c]='\\'; c++; ret[c]='r'   ; break;
+                default: ret[c]=str[d];
+            }
+            
             c++;
         } d+=4; //jump over "<?js"
         memcpy(&ret[c],&app_repl[0],strlen(app_repl)); c+=strlen(app_repl);
@@ -244,14 +262,14 @@ void loadPermission(string name) {
     debLog("Loaded Permission "+name);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv, char** envp) {
     std::string execFile="";
     
     std::map<std::string, std::string> map;
     std::map<std::string, std::string> ::iterator mapi;
     
     debLog("<<MAPPING PARAMS<<");
-    bool loggedIn=false; bool tagMode=false;
+    bool loggedIn=false; bool tagMode=false; bool cgiMode=false;
     for (int i=1; i<argc; i++) {
         std::string a=argv[i];
         if (a=="--help") {
@@ -262,61 +280,70 @@ int main(int argc, char** argv) {
                    "file: js file to be executed\n"
                    "--help: show this help\n"
                    "-mname=jsonValue: object to be mapped into JS\n"
-                   "-aname|pass: provides account login data"
+                   "-aname=pass: provides account login data"
                    "-t: enables tag mode [...<?js code ?>...]");
             return 0;
         }
         
-        if (a[0]!='-') {
-            execFile=a; //JS file
-        } else { 
-            a.erase(0,1); //delete "-"
-            
-            if (a.length()==0) {
-                formatOutput(OM_INVALID_PARAM,"Empty parameter"+i);
-                return 0;
-            }
-            
-            int del;
-            char v=a[0]; a.erase(0,1);
-            switch (v) {
-                case 'm': //map data into js context
-                          del=a.find("=");
-                          map.insert(std::pair<std::string, std::string>(a.substr(0,del),a.substr(del+1,a.length())));
-                          mapi=map.end(); --mapi; debLog(" * " + mapi->first + "=" + mapi->second);
-                          break;
-                case 'a': //logindata
-                          {
-                              vectorns acc= split(a,'=',2);
-                              debLog("Trying login as "+acc[0]+" : "+acc[1]);
-                              
-                              char* fl;
-                              ReadFile("./permissions/"+acc[0],fl);
-                              string flc=fl;
-                              vector2s lns=lineTokenize(flc,'|');
-                              
-                              for (int i=0; i<lns.size(); i++) {
-                                  switch (lns[i][0][0]) {
-                                      case 'p': if (lns[i][1]!=acc[1]) {
-                                                        std::cout << formatOutput(OM_INVALID_LOGIN,"");   
-                                                        return 0;
-                                                    } else { loggedIn=true; }
-                                                break;
-                                      case 'g': loadPermission(lns[i][1]);
-                                                break;
+        if (a=="-cgi") { cgiMode=true; } else {
+            if (a[0]!='-') {
+                execFile=a; //JS file
+            } else { 
+                a.erase(0,1); //delete "-"
+
+                if (a.length()==0) {
+                    formatOutput(OM_INVALID_PARAM,"Empty parameter"+i);
+                    return 0;
+                }
+
+                int del;
+                char v=a[0]; a.erase(0,1);
+                switch (v) {
+                    case 'm': //map data into js context
+                              del=a.find("=");
+                              map.insert(std::pair<std::string, std::string>(a.substr(0,del),a.substr(del+1,a.length())));
+                              mapi=map.end(); --mapi; debLog(" * " + mapi->first + "=" + mapi->second);
+                              break;
+                    case 'a': //logindata
+                              {
+                                  vectorns acc= split(a,'=',2);
+                                  debLog("Trying login as "+acc[0]+" : "+acc[1]);
+
+                                  char* fl;
+                                  ReadFile("./permissions/"+acc[0],fl);
+                                  string flc=fl;
+                                  vector2s lns=lineTokenize(flc,'|');
+
+                                  for (int i=0; i<lns.size(); i++) {
+                                      switch (lns[i][0][0]) {
+                                          case 'p': if (lns[i][1]!=acc[1]) {
+                                                            std::cout << formatOutput(OM_INVALID_LOGIN,"");   
+                                                            return 0;
+                                                        } else { loggedIn=true; }
+                                                    break;
+                                          case 'g': loadPermission(lns[i][1]);
+                                                    break;
+                                      }
                                   }
                               }
-                          }
-                          break;
-                case 't': tagMode=true;
-                          break;
-                default : formatOutput(OM_INVALID_FLAG,"Invalid flag"+i);
-                          return 0;
+                              break;
+                    case 't': tagMode=true;
+                              break;
+                    default : formatOutput(OM_INVALID_FLAG,"Invalid flag"+i);
+                              return 0;
+                }
             }
         }
     }
     if (!loggedIn) { std::cout << formatOutput(OM_INVALID_LOGIN,""); return 0; }
     debLog(">>MAPPING PARAMS>>");
+    
+    if (cgiMode) {
+        char* efc=getenv("SCRIPT_FILENAME");
+        if (efc!=NULL) {
+            execFile.assign(efc);
+        }
+    }
     
     if (execFile=="") {
         std::cout << formatOutput(OM_EXEC_FILE,""); 
@@ -346,6 +373,28 @@ int main(int argc, char** argv) {
         
         context->Global()->Set(String::New(mapi->first.c_str()),a);
         trycatch.~TryCatch();
+    }
+    
+    //Mapping environment variables to "system.env"
+    char** env;
+    
+    //get envp size   
+    v8::Handle<v8::Object> sys=v8::Object::New();
+    context->Global()->Set(String::New("system"),sys);
+    v8::Handle<v8::Object> sysenv=v8::Object::New();
+    sys->Set(String::New("env"),sysenv);
+    
+    int i=0;
+    for (env=envp; *env!=0; env++) {
+        char* cEnv=*env;
+        char* cVl=strchr(cEnv,'=');
+        cVl[0]=0; //split cEnv into 2 #0 terminated strings
+        
+        sysenv->Set(String::New(cEnv),String::New(++cVl));
+        cVl--;
+        cVl[0]='=';
+        
+        i++;
     }
     debLog(">>MAPPED PARAMETERS>>");
     
@@ -403,12 +452,22 @@ int main(int argc, char** argv) {
     TryCatch trycatchc;
     char* schars; int size;
     ReadFile(execFile,schars);
-    char* chars=schars;
+    char* chars;
     if (tagMode) {
         chars=detag(schars,"outputBuffer.write(\"","\");");
         delete[] schars;
-    }
-    Handle<String> source = String::New(chars); delete[] chars;
+    } else { chars=schars; }
+    
+    if (cgiMode) {
+        char* nl=strchr(chars,'\n');
+        if (nl==NULL){
+            schars="";
+        } else {
+            schars=nl+1;
+        }
+    } else { schars=chars; }
+    Handle<String> source = String::New(schars);
+    delete[] chars;
     
     Handle<Script> script = Script::Compile(source);
     if (trycatchc.HasCaught()) {

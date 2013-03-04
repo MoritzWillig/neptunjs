@@ -9,7 +9,7 @@
 #define	FILEMAPPER_H
 
 #include "../../mapper/macros.h"
-#include "../../../libs/v8/include/v8.h"
+#include "../../../libs/v8_64bit/include/v8.h"
 
 using namespace v8;
 

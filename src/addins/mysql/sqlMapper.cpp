@@ -8,7 +8,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "../../../libs/v8/include/v8.h"
+#include "../../../libs/v8_64bit/include/v8.h"
 #include "../../mapper/macros.h"
 #include "../../internalObjects.h"
 #include "../../mapper/PermissionChecks.h"

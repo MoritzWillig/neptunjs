@@ -8,7 +8,7 @@
 #ifndef PERMISSIONCHECKS_H
 #define	PERMISSIONCHECKS_H
 
-#include "../../v8/include/v8.h"
+#include "../../v8_64bit/include/v8.h"
 #include "../Permission.h"
 #include "../internalObjects.h"
 

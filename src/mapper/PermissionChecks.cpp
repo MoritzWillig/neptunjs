@@ -4,7 +4,7 @@
  * Routines to handle permissions for addins
 **/
 
-#include "../../v8/include/v8.h"
+#include "../../v8_64bit/include/v8.h"
 #include "../Permission.h"
 #include "../internalObjects.h"
 

@@ -86,7 +86,6 @@
     <Elem>src/dynv8</Elem>
     <Elem>src/addins</Elem>
     <Elem>libs/boost_1_51_0</Elem>
-    <Elem>libs/mysqlconnector32bit/include</Elem>
     <Elem>src/etc</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
@@ -114,6 +113,7 @@
             <pElem>.</pElem>
             <pElem>libs/boost_1_51_0</pElem>
             <pElem>libs/mysqlconnector64bit/include</pElem>
+            <pElem>src</pElem>
           </incDir>
         </ccTool>
         <linkerTool>
@@ -131,16 +131,6 @@
           <commandLine>-pthread -lrt -ldl</commandLine>
         </linkerTool>
       </compileType>
-      <folder path="TestFiles/f1">
-        <ccTool>
-          <incDir>
-            <pElem>src</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
-        </linkerTool>
-      </folder>
       <item path="src/addins/mysql/sqlMapper.cpp" ex="false" tool="1" flavor2="0">
         <ccTool>
           <additionalDep></additionalDep>

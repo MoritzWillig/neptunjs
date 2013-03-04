@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include "mapper/macros.h"
-#include "../../../libs/v8/include/v8.h"
+#include "../../../libs/v8_64bit/include/v8.h"
 
 namespace addin_AbstractNative {
     extern v8::Persistent<v8::Function> v8abstractNative;

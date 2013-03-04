@@ -9,7 +9,7 @@
 #define	SCRIPT_H
 
 #include <string>
-#include "../../v8/include/v8.h"
+#include "../../v8_64bit/include/v8.h"
 
 using namespace std;
 

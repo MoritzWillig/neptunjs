@@ -5,7 +5,7 @@
  * Created on January 27, 2013, 11:17 PM
  */
 
-#include "../../../libs/v8/include/v8.h"
+#include "../../../libs/v8_64bit/include/v8.h"
 #include "abstractNative.h"
 
 namespace addin_AbstractNative {
