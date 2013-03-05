@@ -1,5 +1,0 @@
-#editors has also user rights
-g|user
-
-#full access to trueapps
-a|rwx|http|false|www.trueapps.de/
