@@ -39,7 +39,16 @@ void debLog(string s, bool newline=true) {
 #endif
 }
 
-enum JSOutputMsg { OM_NO_ERROR=0, OM_EXEC_FILE=1, OM_NO_FILE=2, OM_INVALID_FLAG=3, OM_INVALID_PARAM=4, OM_JS_ERROR=5, OM_INVALID_LOGIN=6};
+enum JSOutputMsg {
+    OM_NO_ERROR=0,
+    OM_EXEC_FILE=1,
+    OM_NO_FILE=2,
+    OM_INVALID_FLAG=3,
+    OM_INVALID_PARAM=4,
+    OM_JS_ERROR=5,
+    OM_INVALID_LOGIN=6,
+    OM_OUT_OF_MEM=7
+};
 
 std::string formatOutput(JSOutputMsg statuscode, std::string output) {
     std::stringstream ios;
@@ -53,9 +62,29 @@ std::string formatOutput(JSOutputMsg statuscode, std::string output) {
         case OM_INVALID_PARAM: statusMsg="Invalid parameter"; break;
         case OM_JS_ERROR:      statusMsg="Uncaught JS Error"; break;
         case OM_INVALID_LOGIN: statusMsg="Invalid login"; break;
+        case OM_OUT_OF_MEM:    statusMsg="Out of Memory"; break;
     }
     ios << statuscode << " " << statusMsg << "\nOUTPUT " << output.length() << "\n" << output <<"\n";
     return ios.str();
+}
+
+string getOrigin() {
+    int bsz=255;
+    int r=bsz;
+    char* lnk=(char*)malloc(bsz+1);
+    if (lnk==NULL) {
+        formatOutput(OM_OUT_OF_MEM,"Function getOrigin");
+        exit(EXIT_FAILURE);
+    }
+    r=readlink("/proc/self/exe",lnk,r);
+    lnk[r]=0;
+    
+    char* c=strrchr(lnk,'/'); c[0]=0;
+    
+    string rs(lnk);
+    cout<<rs<<"\n";
+    free(lnk);
+    return rs;    
 }
 
 // Reads a file into a v8 string.
@@ -228,7 +257,7 @@ void loadPermission(string name) {
     loadedPermissions.push_back(name);
     
     char* cs;
-    ReadFile("./permissions/groups/"+name,cs);
+    ReadFile(getOrigin()+"/../permissions/groups/"+name,cs);
     string s=cs; string c="";
     
     vector2s pms=lineTokenize(s,'|',5);
@@ -310,7 +339,7 @@ int main(int argc, char** argv, char** envp) {
                                   debLog("Trying login as "+acc[0]+" : "+acc[1]);
 
                                   char* fl;
-                                  ReadFile("./permissions/"+acc[0],fl);
+                                  ReadFile(getOrigin()+"/../permissions/"+acc[0],fl);
                                   string flc=fl;
                                   vector2s lns=lineTokenize(flc,'|');
 

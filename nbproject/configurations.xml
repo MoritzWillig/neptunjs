@@ -110,23 +110,24 @@
           <commandlineTool>g++</commandlineTool>
           <incDir>
             <pElem>.</pElem>
-            <pElem>.</pElem>
             <pElem>libs/boost_1_51_0</pElem>
-            <pElem>libs/mysqlconnector64bit/include</pElem>
             <pElem>src</pElem>
+            <pElem>libs/v8_64bit/include</pElem>
+            <pElem>libs/mysqlconnector64bit/include</pElem>
           </incDir>
         </ccTool>
         <linkerTool>
           <output>bin/neptunjsx64</output>
-          <linkerDynSerch>
-            <pElem>libs</pElem>
-            <pElem>libs/mysqlconnector64bit/lib</pElem>
-          </linkerDynSerch>
           <commandlineTool>g++</commandlineTool>
           <linkerLibItems>
-            <linkerLibFileItem>libs/v8_64bit/out/x64.release/obj.target/tools/gyp/libv8_base.a</linkerLibFileItem>
-            <linkerLibFileItem>libs/v8_64bit/out/x64.release/obj.target/tools/gyp/libv8_snapshot.a</linkerLibFileItem>
-            <linkerLibFileItem>libs/mysqlconnector64bit/lib/libmysqlcppconn.so</linkerLibFileItem>
+            <linkerOptionItem>-L'libs/v8_64bit/out/x64.release/obj.target/tools/gyp'</linkerOptionItem>
+            <linkerOptionItem>-Wl,-Bstatic</linkerOptionItem>
+            <linkerOptionItem>-lv8_base</linkerOptionItem>
+            <linkerOptionItem>-lv8_snapshot</linkerOptionItem>
+            <linkerOptionItem>-Wl,-rpath='$$ORIGIN/../libs/mysqlconnector64bit/lib'</linkerOptionItem>
+            <linkerOptionItem>-L./libs/mysqlconnector64bit/lib</linkerOptionItem>
+            <linkerOptionItem>-Wl,-Bdynamic</linkerOptionItem>
+            <linkerOptionItem>-lmysqlcppconn</linkerOptionItem>
           </linkerLibItems>
           <commandLine>-pthread -lrt -ldl</commandLine>
         </linkerTool>

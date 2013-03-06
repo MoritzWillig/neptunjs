@@ -4,3 +4,4 @@ config/site.php
 files/cache/*
 libs/boost_1_51_0
 build/
+*~

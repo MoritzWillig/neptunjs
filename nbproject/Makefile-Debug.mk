@@ -66,17 +66,11 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-Wl,-rpath,libs -Wl,-rpath,libs/mysqlconnector64bit/lib libs/v8_64bit/out/x64.release/obj.target/tools/gyp/libv8_base.a libs/v8_64bit/out/x64.release/obj.target/tools/gyp/libv8_snapshot.a libs/mysqlconnector64bit/lib/libmysqlcppconn.so
+LDLIBSOPTIONS=-L'libs/v8_64bit/out/x64.release/obj.target/tools/gyp' -Wl,-Bstatic -lv8_base -lv8_snapshot -Wl,-rpath='$$ORIGIN/../libs/mysqlconnector64bit/lib' -L./libs/mysqlconnector64bit/lib -Wl,-Bdynamic -lmysqlcppconn
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk bin/neptunjsx64
-
-bin/neptunjsx64: libs/v8_64bit/out/x64.release/obj.target/tools/gyp/libv8_base.a
-
-bin/neptunjsx64: libs/v8_64bit/out/x64.release/obj.target/tools/gyp/libv8_snapshot.a
-
-bin/neptunjsx64: libs/mysqlconnector64bit/lib/libmysqlcppconn.so
 
 bin/neptunjsx64: ${OBJECTFILES}
 	${MKDIR} -p bin
@@ -85,77 +79,77 @@ bin/neptunjsx64: ${OBJECTFILES}
 ${OBJECTDIR}/src/abstractNative.o: nbproject/Makefile-${CND_CONF}.mk src/abstractNative.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/abstractNative.o src/abstractNative.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/abstractNative.o src/abstractNative.cpp
 
 ${OBJECTDIR}/src/addins/outputBuffer/outputBufferMapper.o: nbproject/Makefile-${CND_CONF}.mk src/addins/outputBuffer/outputBufferMapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/outputBuffer
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/outputBuffer/outputBufferMapper.o src/addins/outputBuffer/outputBufferMapper.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/outputBuffer/outputBufferMapper.o src/addins/outputBuffer/outputBufferMapper.cpp
 
 ${OBJECTDIR}/src/addins/file/managedFile.o: nbproject/Makefile-${CND_CONF}.mk src/addins/file/managedFile.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/file
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/file/managedFile.o src/addins/file/managedFile.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/file/managedFile.o src/addins/file/managedFile.cpp
 
 ${OBJECTDIR}/src/main.o: nbproject/Makefile-${CND_CONF}.mk src/main.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/main.o src/main.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/main.o src/main.cpp
 
 ${OBJECTDIR}/src/addins/script/script.o: nbproject/Makefile-${CND_CONF}.mk src/addins/script/script.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/script
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/script/script.o src/addins/script/script.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/script/script.o src/addins/script/script.cpp
 
 ${OBJECTDIR}/src/addins/basicAddin/BasicAddin.o: nbproject/Makefile-${CND_CONF}.mk src/addins/basicAddin/BasicAddin.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/basicAddin
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/basicAddin/BasicAddin.o src/addins/basicAddin/BasicAddin.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/basicAddin/BasicAddin.o src/addins/basicAddin/BasicAddin.cpp
 
 ${OBJECTDIR}/src/Permission.o: nbproject/Makefile-${CND_CONF}.mk src/Permission.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Permission.o src/Permission.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/Permission.o src/Permission.cpp
 
 ${OBJECTDIR}/src/addins/mysql/sqlMapper.o: nbproject/Makefile-${CND_CONF}.mk src/addins/mysql/sqlMapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/mysql
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/mysql/sqlMapper.o src/addins/mysql/sqlMapper.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/mysql/sqlMapper.o src/addins/mysql/sqlMapper.cpp
 
 ${OBJECTDIR}/src/addins/file/fileMapper.o: nbproject/Makefile-${CND_CONF}.mk src/addins/file/fileMapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/file
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/file/fileMapper.o src/addins/file/fileMapper.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/file/fileMapper.o src/addins/file/fileMapper.cpp
 
 ${OBJECTDIR}/src/mapper/PermissionChecks.o: nbproject/Makefile-${CND_CONF}.mk src/mapper/PermissionChecks.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/mapper
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/mapper/PermissionChecks.o src/mapper/PermissionChecks.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/mapper/PermissionChecks.o src/mapper/PermissionChecks.cpp
 
 ${OBJECTDIR}/src/etc/SysFunctions.o: nbproject/Makefile-${CND_CONF}.mk src/etc/SysFunctions.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/etc
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/etc/SysFunctions.o src/etc/SysFunctions.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/etc/SysFunctions.o src/etc/SysFunctions.cpp
 
 ${OBJECTDIR}/src/addins/outputBuffer/outputBuffer.o: nbproject/Makefile-${CND_CONF}.mk src/addins/outputBuffer/outputBuffer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/outputBuffer
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/outputBuffer/outputBuffer.o src/addins/outputBuffer/outputBuffer.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/outputBuffer/outputBuffer.o src/addins/outputBuffer/outputBuffer.cpp
 
 ${OBJECTDIR}/src/addins/permission/permissionMapper.o: nbproject/Makefile-${CND_CONF}.mk src/addins/permission/permissionMapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/permission
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/permission/permissionMapper.o src/addins/permission/permissionMapper.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/permission/permissionMapper.o src/addins/permission/permissionMapper.cpp
 
 ${OBJECTDIR}/src/addins/mysql/managedSql.o: nbproject/Makefile-${CND_CONF}.mk src/addins/mysql/managedSql.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/mysql
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/mysql/managedSql.o src/addins/mysql/managedSql.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/mysql/managedSql.o src/addins/mysql/managedSql.cpp
 
 ${OBJECTDIR}/src/addins/script/managedScript.o: nbproject/Makefile-${CND_CONF}.mk src/addins/script/managedScript.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/addins/script
 	${RM} $@.d
-	$(COMPILE.cc) -g -I. -I. -Ilibs/boost_1_51_0 -Ilibs/mysqlconnector64bit/include -Isrc -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/script/managedScript.o src/addins/script/managedScript.cpp
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/script/managedScript.o src/addins/script/managedScript.cpp
 
 # Subprojects
 .build-subprojects:
