@@ -50,6 +50,7 @@ enum JSOutputMsg {
     OM_OUT_OF_MEM=7
 };
 
+bool cgiMode=false;
 std::string formatOutput(JSOutputMsg statuscode, std::string output) {
     std::stringstream ios;
     
@@ -64,7 +65,17 @@ std::string formatOutput(JSOutputMsg statuscode, std::string output) {
         case OM_INVALID_LOGIN: statusMsg="Invalid login"; break;
         case OM_OUT_OF_MEM:    statusMsg="Out of Memory"; break;
     }
-    ios << statuscode << " " << statusMsg << "\nOUTPUT " << output.length() << "\n" << output <<"\n";
+    
+    if (cgiMode) {
+        if (statuscode==OM_NO_ERROR) {
+            ios<<output;
+        } else {
+            ios<<"Content-Type: text/plain\r\n\r\n" << output <<"\n";
+        }
+    } else {
+        ios << statuscode << " " << statusMsg << "\nOUTPUT " << output.length() << "\n" << output <<"\n";
+    }
+    
     return ios.str();
 }
 
@@ -298,7 +309,7 @@ int main(int argc, char** argv, char** envp) {
     std::map<std::string, std::string> ::iterator mapi;
     
     debLog("<<MAPPING PARAMS<<");
-    bool loggedIn=false; bool tagMode=false; bool cgiMode=false;
+    bool loggedIn=false; bool tagMode=false;
     for (int i=1; i<argc; i++) {
         std::string a=argv[i];
         if (a=="--help") {
