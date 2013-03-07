@@ -82,7 +82,7 @@ string getOrigin() {
     char* c=strrchr(lnk,'/'); c[0]=0;
     
     string rs(lnk);
-    cout<<rs<<"\n";
+    
     free(lnk);
     return rs;    
 }

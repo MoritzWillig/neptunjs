@@ -1,2 +1,2 @@
 #!../../bin/neptunjsx64 -cgi -amoritz=testpw
-ob.write("Ecexuted in cgi-mode");
+ob.write("Executed in cgi-mode");
