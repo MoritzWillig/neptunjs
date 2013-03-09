@@ -49,7 +49,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/addins/outputBuffer/outputBuffer.o \
 	${OBJECTDIR}/src/addins/permission/permissionMapper.o \
 	${OBJECTDIR}/src/addins/mysql/managedSql.o \
-	${OBJECTDIR}/src/addins/script/managedScript.o
+	${OBJECTDIR}/src/addins/script/managedScript.o \
+	${OBJECTDIR}/src/comInterface/comunicationInterface.o
 
 
 # C Compiler Flags
@@ -150,6 +151,11 @@ ${OBJECTDIR}/src/addins/script/managedScript.o: src/addins/script/managedScript.
 	${MKDIR} -p ${OBJECTDIR}/src/addins/script
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/script/managedScript.o src/addins/script/managedScript.cpp
+
+${OBJECTDIR}/src/comInterface/comunicationInterface.o: src/comInterface/comunicationInterface.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/comInterface
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/comInterface/comunicationInterface.o src/comInterface/comunicationInterface.cpp
 
 # Subprojects
 .build-subprojects:

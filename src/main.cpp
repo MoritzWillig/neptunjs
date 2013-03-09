@@ -19,6 +19,8 @@
 #include <string.h>
 #include <boost/array.hpp>
 
+#include "comInterface/comunicationInterface.h"
+
 #include "addins.h"
 #include "addins/outputBuffer/outputBuffer.h"
 #include "Permission.h"
@@ -37,46 +39,6 @@ void debLog(string s, bool newline=true) {
     std::cout<<s;
     if (newline) { std::cout<<endl; }
 #endif
-}
-
-enum JSOutputMsg {
-    OM_NO_ERROR=0,
-    OM_EXEC_FILE=1,
-    OM_NO_FILE=2,
-    OM_INVALID_FLAG=3,
-    OM_INVALID_PARAM=4,
-    OM_JS_ERROR=5,
-    OM_INVALID_LOGIN=6,
-    OM_OUT_OF_MEM=7
-};
-
-bool cgiMode=false;
-std::string formatOutput(JSOutputMsg statuscode, std::string output) {
-    std::stringstream ios;
-    
-    std::string statusMsg="";
-    switch (statuscode) {
-        case OM_NO_ERROR:      statusMsg="OK"; break;
-        case OM_EXEC_FILE:     statusMsg="No exec file given"; break;
-        case OM_NO_FILE:       statusMsg="No file found"; break;
-        case OM_INVALID_FLAG:  statusMsg="Unknown flag"; break;
-        case OM_INVALID_PARAM: statusMsg="Invalid parameter"; break;
-        case OM_JS_ERROR:      statusMsg="Uncaught JS Error"; break;
-        case OM_INVALID_LOGIN: statusMsg="Invalid login"; break;
-        case OM_OUT_OF_MEM:    statusMsg="Out of Memory"; break;
-    }
-    
-    if (cgiMode) {
-        if (statuscode==OM_NO_ERROR) {
-            ios<<output;
-        } else {
-            ios<<"Content-Type: text/plain\r\n\r\n" << output <<"\n";
-        }
-    } else {
-        ios << statuscode << " " << statusMsg << "\nOUTPUT " << output.length() << "\n" << output <<"\n";
-    }
-    
-    return ios.str();
 }
 
 string getOrigin() {
@@ -317,11 +279,13 @@ int main(int argc, char** argv, char** envp) {
                    " * based on the JS V8 engine\n\n"
                    " * Copyright by Moritz Willig <moritz.willig@gmail.com>\n"
                    "neptunjs file [options]\n"
-                   "file: js file to be executed\n"
-                   "--help: show this help\n"
+                   "file: js file to be executed\n\n"
+                   "--help: show this help text\n"
                    "-mname=jsonValue: object to be mapped into JS\n"
-                   "-aname=pass: provides account login data"
-                   "-t: enables tag mode [...<?js code ?>...]");
+                   "-aname=pass: provides account login data\n"
+                   "-t: enables tag mode [...<?js code ?>...]\n",
+                   "-cgi: skips the first line of the file and creates output for cgi\n"
+                   "  For executing cgi scripts with neptunjs use neptunjs_cgi\n");
             return 0;
         }
         
@@ -348,7 +312,7 @@ int main(int argc, char** argv, char** envp) {
                               {
                                   vectorns acc= split(a,'=',2);
                                   debLog("Trying login as "+acc[0]+" : "+acc[1]);
-
+                                  
                                   char* fl;
                                   ReadFile(getOrigin()+"/../permissions/"+acc[0],fl);
                                   string flc=fl;
@@ -369,7 +333,7 @@ int main(int argc, char** argv, char** envp) {
                               break;
                     case 't': tagMode=true;
                               break;
-                    default : formatOutput(OM_INVALID_FLAG,"Invalid flag"+i);
+                    default : std::cout<<formatOutput(OM_INVALID_FLAG,"Invalid flag"+i);
                               return 0;
                 }
             }

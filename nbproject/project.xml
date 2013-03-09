@@ -16,6 +16,7 @@
                 <sourceRootElem>src/addins</sourceRootElem>
                 <sourceRootElem>libs/boost_1_51_0</sourceRootElem>
                 <sourceRootElem>src/etc</sourceRootElem>
+                <sourceRootElem>src/comInterface</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

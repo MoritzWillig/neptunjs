@@ -49,6 +49,12 @@
             <itemPath>src/addins/script/script.h</itemPath>
           </logicalFolder>
         </logicalFolder>
+        <logicalFolder name="comInterface"
+                       displayName="comInterface"
+                       projectFiles="true">
+          <itemPath>src/comInterface/comunicationInterface.cpp</itemPath>
+          <itemPath>src/comInterface/comunicationInterface.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="etc" displayName="etc" projectFiles="true">
           <itemPath>src/etc/SysFunctions.cpp</itemPath>
           <itemPath>src/etc/SysFunctions.h</itemPath>
@@ -87,6 +93,7 @@
     <Elem>src/addins</Elem>
     <Elem>libs/boost_1_51_0</Elem>
     <Elem>src/etc</Elem>
+    <Elem>src/comInterface</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -117,7 +124,7 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>bin/neptunjsx64</output>
+          <output>bin/neptunjs</output>
           <commandlineTool>g++</commandlineTool>
           <linkerLibItems>
             <linkerOptionItem>-L'libs/v8_64bit/out/x64.release/obj.target/tools/gyp'</linkerOptionItem>

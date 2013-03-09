@@ -1,0 +1,3 @@
+#!../../../bin/neptunjs_cgi -amoritz=testpw -cgi
+ob.writeln("content-type:text/plain\r\n\r\n");
+ob.writeln("CGI Test");

@@ -12,8 +12,8 @@ CND_DISTDIR=dist
 CND_BUILDDIR=build
 NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=bin/neptunjsx64
-OUTPUT_BASENAME=neptunjsx64
+OUTPUT_PATH=bin/neptunjs
+OUTPUT_BASENAME=neptunjs
 PACKAGE_TOP_DIR=neptunjs/
 
 # Functions

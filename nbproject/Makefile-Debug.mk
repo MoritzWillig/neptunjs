@@ -49,7 +49,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/addins/outputBuffer/outputBuffer.o \
 	${OBJECTDIR}/src/addins/permission/permissionMapper.o \
 	${OBJECTDIR}/src/addins/mysql/managedSql.o \
-	${OBJECTDIR}/src/addins/script/managedScript.o
+	${OBJECTDIR}/src/addins/script/managedScript.o \
+	${OBJECTDIR}/src/comInterface/comunicationInterface.o
 
 
 # C Compiler Flags
@@ -70,11 +71,11 @@ LDLIBSOPTIONS=-L'libs/v8_64bit/out/x64.release/obj.target/tools/gyp' -Wl,-Bstati
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk bin/neptunjsx64
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk bin/neptunjs
 
-bin/neptunjsx64: ${OBJECTFILES}
+bin/neptunjs: ${OBJECTFILES}
 	${MKDIR} -p bin
-	g++ -pthread -lrt -ldl -o bin/neptunjsx64 ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	g++ -pthread -lrt -ldl -o bin/neptunjs ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/src/abstractNative.o: nbproject/Makefile-${CND_CONF}.mk src/abstractNative.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -151,13 +152,18 @@ ${OBJECTDIR}/src/addins/script/managedScript.o: nbproject/Makefile-${CND_CONF}.m
 	${RM} $@.d
 	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/addins/script/managedScript.o src/addins/script/managedScript.cpp
 
+${OBJECTDIR}/src/comInterface/comunicationInterface.o: nbproject/Makefile-${CND_CONF}.mk src/comInterface/comunicationInterface.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src/comInterface
+	${RM} $@.d
+	$(COMPILE.cc) -g -I. -Ilibs/boost_1_51_0 -Isrc -Ilibs/v8_64bit/include -Ilibs/mysqlconnector64bit/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/comInterface/comunicationInterface.o src/comInterface/comunicationInterface.cpp
+
 # Subprojects
 .build-subprojects:
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} bin/neptunjsx64
+	${RM} bin/neptunjs
 
 # Subprojects
 .clean-subprojects:
