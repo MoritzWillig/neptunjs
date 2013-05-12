@@ -16,6 +16,9 @@ NeptunJS is designed to start from the console and also includes an CGI mode (pa
 ### tag-mode ( `<?js ... ?>` )
 By default all code-files are interpreted as JavaScript code. For special purposes, like text files or web pages with small amounts of code, this behaviour can be turned off by passing `-t` to NeptunJS. By turning on tag-mode neptunjs echos any text and executes only code enclosed in <?js-taggs.
 
+## Build
+The repository contains an compiled binary for linux 64bit under /bin/. Furthermore an compiled version of the [v8 engine](http://code.google.com/p/v8/) and the [MySqlConnector for C++](http://dev.mysql.com/downloads/connector/cpp/) are required. Private copies of both repositories are linked as submodules under /libs/ and have to be compiled before compiling NeptunJS itself. Currently the project structure is automatically generated and managed by [Netbeans for C++](https://netbeans.org/features/cpp/). Therefore I would ask you to use Netbeans when committing new code since it generates makefiles automatically, which leads to an more uniform code structure.
+
 ## Copyright
 
 The NeptunJS project is licensed under a [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License](http://creativecommons.org/licenses/by-nc-sa/3.0/)
