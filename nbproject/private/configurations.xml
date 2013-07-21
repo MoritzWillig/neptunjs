@@ -24,8 +24,6 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/params.js -mInp={\"x\":123\,\"y\":321} -mz=100 -</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/params.js -mInp={\"x\":123\,\"y\":321} -mz=100 -amoritz|testpx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/params.js -mInp={\"x\":123\,\"y\":321} -mz=100 -amoritz=testpx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/params.js -mInp={\"x\":123\,\"y\":321} -mz=100 -amoritzx=testpx</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/params.js -mInp={\"x\":123\,\"y\":321} -mz=100 -amoritz=testpw</runcommandpicklistitem>
@@ -34,8 +32,10 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/envvars.js -mInp={\"x\":123\,\"y\":321} -mz=100 -amoritz=testpw</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/cgi.js -cgi -amoritz=testpw</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/envvars.js -amoritz=testpw</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/envvars.js -pa|rwx|file|false|./ -pa|rwx|sql|false|</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/envvars.js -prwx|file|false|./ -prwx|sql|false|</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" samples/js/envvars.js -amoritz=testpw</runcommand>
+        <runcommand>"${OUTPUT_PATH}" samples/js/envvars.js -prwx|file|false|./ -prwx|sql|false|</runcommand>
         <rundir>/home/moritz/Projects/NeptunJS/</rundir>
         <buildfirst>true</buildfirst>
         <console-type>2</console-type>
