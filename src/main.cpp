@@ -126,19 +126,6 @@ string IntToStr(int i) {
     return out.str();
 }
 
-
-vector2s lineTokenize(string s, char delemiter, int limit=2) {
-    vectorns lns=split(s,'\n', INT_MAX);
-    vector2s dest;
-    for (int i=0; i<lns.size(); i++) {
-        if (lns[i].length()!=0) {
-            dest.push_back(split(lns[i],delemiter,limit));
-        }
-    }
-    
-    return dest;
-}
-
 void upperCase(string& str) {
     for (unsigned int i=0;i<str.length();i++) {
         str[i]=toupper(str[i]);
@@ -272,17 +259,17 @@ int main(int argc, char** argv, char** envp) {
                     case 'p': //permission restriction
                               //access: -p[rwx]|protocol[file/tcp/http]|lockTrace[true/false]|path
                               {
-                              vector2s pms=lineTokenize(a,'|',4);
+                              vectorns pms=split(a,'|',4);
                               
                               Permission* pm = new Permission();
-                              pm->read   =(pms[i][1].find('r')!=pms[i][1].npos);
-                              pm->write  =(pms[i][1].find('w')!=pms[i][1].npos);
-                              pm->execute=(pms[i][1].find('x')!=pms[i][1].npos);
-                              pm->protocol=pms[i][2];
-                              upperCase(pms[i][3]);
-                              pm->isFile  =(pms[i][3]=="TRUE");
-                              pm->trace=(pms[i].size()==5)?pms[i][4]:"";
-                              pc.addPermission(pms[i][2],pm);
+                              pm->read   =(pms[0].find('r')!=pms[0].npos);
+                              pm->write  =(pms[0].find('w')!=pms[0].npos);
+                              pm->execute=(pms[0].find('x')!=pms[0].npos);
+                              pm->protocol=pms[1];
+                              upperCase(pms[2]);
+                              pm->isFile  =(pms[2]=="TRUE");
+                              pm->trace=(pms.size()==5)?pms[3]:"";
+                              pc.addPermission(pms[1],pm);
                               }
                               break;
                     case 't': tagMode=true;
@@ -293,7 +280,6 @@ int main(int argc, char** argv, char** envp) {
             }
         }
     }
-    if (!loggedIn) { std::cout << formatOutput(OM_INVALID_LOGIN,""); return 0; }
     debLog(">>MAPPING PARAMS>>");
     
     if (cgiMode) {
