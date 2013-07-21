@@ -166,7 +166,7 @@ char* detag(char* str, const char* pre_repl, const char* app_repl) {
             i=j+2;
         }
         
-        //qutotations, backslashes, tabs and new lines have to be encoded
+        //quotations, backslashes, tabs and new lines have to be encoded
         if ((str[i]=='\\' ) or (str[i]=='"' ) or (str[i]=='\t') or (str[i]=='\n') or (str[i]=='\r')) {
             bufferSize+=1;
         }
@@ -224,45 +224,6 @@ char* detag(char* str, const char* pre_repl, const char* app_repl) {
 }
 
 PermissionCollection pc;
-vector<string> loadedPermissions;
-void loadPermission(string name) {
-    debLog("Loading permission: "+name);                                            
-    loadedPermissions.push_back(name);
-    
-    char* cs;
-    ReadFile(getOrigin()+"/../permissions/groups/"+name,cs);
-    string s=cs; string c="";
-    
-    vector2s pms=lineTokenize(s,'|',5);
-    for (int i=0; i<pms.size(); i++) {
-        switch (pms[i][0][0]) {
-            case 'a': //access: a|[rwx]|protocol[file/tcp/http]|lockTrace[true/false]|path
-                {
-                    Permission* pm = new Permission();
-                    
-                    pm->read   =(pms[i][1].find('r')!=pms[i][1].npos);
-                    pm->write  =(pms[i][1].find('w')!=pms[i][1].npos);
-                    pm->execute=(pms[i][1].find('x')!=pms[i][1].npos);
-                    pm->protocol=pms[i][2];
-                    upperCase(pms[i][3]);
-                    pm->isFile  =(pms[i][3]=="TRUE");
-                    pm->trace=(pms[i].size()==5)?pms[i][4]:"";
-                    
-                    pc.addPermission(pms[i][2],pm);
-                }
-                break;
-            case 'g'://group: g|groupname
-                { 
-                    //check if not already added
-                    if (find(loadedPermissions.begin(), loadedPermissions.end(), pms[i][1])==loadedPermissions.end()) {
-                        loadPermission(pms[i][1]);
-                    }
-                }
-                break;
-        }
-    }
-    debLog("Loaded Permission "+name);
-}
 
 int main(int argc, char** argv, char** envp) {
     std::string execFile="";
@@ -275,14 +236,14 @@ int main(int argc, char** argv, char** envp) {
     for (int i=1; i<argc; i++) {
         std::string a=argv[i];
         if (a=="--help") {
-            printf(" * NeptunJS 0.8.0 - server side JS implementation\n"
+            printf(" * NeptunJS 0.9.0 - server side JS implementation\n"
                    " * based on the JS V8 engine\n\n"
                    " * Copyright by Moritz Willig <moritz.willig@gmail.com>\n"
                    "neptunjs file [options]\n"
                    "file: js file to be executed\n\n"
                    "--help: show this help text\n"
-                   "-mname=jsonValue: object to be mapped into JS\n"
-                   "-aname=pass: provides account login data\n"
+                   "-p[rwx]|protocol[file/tcp/http/...]|lockTrace[true/false]|path\n"
+                   " Adds user defined permissions for the running code\n"
                    "-t: enables tag mode [...<?js code ?>...]\n",
                    "-cgi: skips the first line of the file and creates output for cgi\n"
                    "  For executing cgi scripts with neptunjs use neptunjs_cgi\n");
@@ -308,32 +269,25 @@ int main(int argc, char** argv, char** envp) {
                               map.insert(std::pair<std::string, std::string>(a.substr(0,del),a.substr(del+1,a.length())));
                               mapi=map.end(); --mapi; debLog(" * " + mapi->first + "=" + mapi->second);
                               break;
-                    case 'a': //logindata
+                    case 'p': //permission restriction
+                              //access: -p[rwx]|protocol[file/tcp/http]|lockTrace[true/false]|path
                               {
-                                  vectorns acc= split(a,'=',2);
-                                  debLog("Trying login as "+acc[0]+" : "+acc[1]);
-                                  
-                                  char* fl;
-                                  ReadFile(getOrigin()+"/../permissions/"+acc[0],fl);
-                                  string flc=fl;
-                                  vector2s lns=lineTokenize(flc,'|');
-
-                                  for (int i=0; i<lns.size(); i++) {
-                                      switch (lns[i][0][0]) {
-                                          case 'p': if (lns[i][1]!=acc[1]) {
-                                                            std::cout << formatOutput(OM_INVALID_LOGIN,"");   
-                                                            return 0;
-                                                        } else { loggedIn=true; }
-                                                    break;
-                                          case 'g': loadPermission(lns[i][1]);
-                                                    break;
-                                      }
-                                  }
+                              vector2s pms=lineTokenize(a,'|',4);
+                              
+                              Permission* pm = new Permission();
+                              pm->read   =(pms[i][1].find('r')!=pms[i][1].npos);
+                              pm->write  =(pms[i][1].find('w')!=pms[i][1].npos);
+                              pm->execute=(pms[i][1].find('x')!=pms[i][1].npos);
+                              pm->protocol=pms[i][2];
+                              upperCase(pms[i][3]);
+                              pm->isFile  =(pms[i][3]=="TRUE");
+                              pm->trace=(pms[i].size()==5)?pms[i][4]:"";
+                              pc.addPermission(pms[i][2],pm);
                               }
                               break;
                     case 't': tagMode=true;
                               break;
-                    default : std::cout<<formatOutput(OM_INVALID_FLAG,"Invalid flag"+i);
+                    default : std::cout<<formatOutput(OM_INVALID_FLAG,"Invalid flag");
                               return 0;
                 }
             }
@@ -465,7 +419,7 @@ int main(int argc, char** argv, char** envp) {
     if (cgiMode) {
         char* nl=strchr(chars,'\n');
         if (nl==NULL){
-            schars="";
+            schars=(char*)"";
         } else {
             schars=nl+1;
         }
