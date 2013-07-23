@@ -1,7 +1,7 @@
 [submodule "libs/mysqlconnector64bit"]
 	path = libs/mysqlconnector64bit
 	url = git://github.com/MoritzWillig/mysqlconnector64bit.git
-	irgnore=dirty
+	ignore=dirty
 [submodule "libs/v8_64bit"]
 	path = libs/v8_64bit
 	url = git://github.com/v8/v8.git
