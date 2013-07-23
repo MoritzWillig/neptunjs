@@ -30,6 +30,8 @@
 using namespace std;
 //using namespace v8;
 
+Persistent<Context> context;
+
 /**
  * Defines debugging output to be displayed
 **/
@@ -39,6 +41,21 @@ void debLog(string s, bool newline=true) {
     std::cout<<s;
     if (newline) { std::cout<<endl; }
 #endif
+}
+
+void doExit() {
+    debLog("<<OUTPUT FORMAT<<");
+    std::cout << formatOutput(OM_NO_ERROR,OutputBuffer::closeAll());   
+    debLog(">>OUTPUT FORMAT>>");
+    
+    addins::unload(); //Unload addins
+    
+    //Delete handle scope and handles
+    //Handle<Context> context = Context::GetCurrent();
+    context.Dispose();
+    //on return from a "native" function use 'return handle_scope.Close(returnhandle);' to keep the value handle valid in the new scope
+    
+    exit(0);
 }
 
 string getOrigin() {
@@ -94,6 +111,10 @@ v8::Handle<v8::Value> parseJson(v8::Handle<v8::Value> jsonString) {
     Handle<Function> JSON_parse = Handle<Function>::Cast(JSON->Get(String::New("parse")));
 
     return scope.Close(JSON_parse->Call(JSON, 1, &jsonString));
+}
+
+JS_METHOD(njsExit) {
+    doExit();
 }
 
 
@@ -297,7 +318,7 @@ int main(int argc, char** argv, char** envp) {
     V8::Initialize(); //Create from snapshot or create new context
     HandleScope handle_scope; //Creates new handle scope -> new handles are stored here
     
-    Persistent<Context> context = Context::New(); //creates new context (persistent->avoid deletion by the GC)
+    context = Context::New(); //creates new context (persistent->avoid deletion by the GC)
     Context::Scope context_scope(context); //all code will be executed in this scope
     
     debLog("<<LOADING ADDINS<<");
@@ -358,6 +379,9 @@ int main(int argc, char** argv, char** envp) {
     //Handle<Function> prmc = Handle<Function>::Cast(addin_permission::v8permission->GetConstructor());
     //Handle<Object> o=Handle<Object>::Cast(context->Global()->Get(String::New("Permission")));
     //Handle<Function> prmc = Handle<Function>::Cast(o->GetConstructor());
+
+    Handle<Object> global = context->Global();
+    global->Set(v8::String::New("exit"),v8::FunctionTemplate::New(njsExit)->GetFunction());
     
     //manually create an permission object
     v8::Handle<v8::Function> an=addin_AbstractNative::v8abstractNative;
@@ -452,13 +476,5 @@ int main(int argc, char** argv, char** envp) {
     trycatch.~TryCatch();
     debLog(">>FINISHED SCRIPT<<");
     
-    debLog("<<OUTPUT FORMAT<<");
-    std::cout << formatOutput(OM_NO_ERROR,OutputBuffer::closeAll());   
-    debLog(">>OUTPUT FORMAT>>");
-    
-    addins::unload(); //Unload addins
-    context.Dispose(); //Deletes handle scope with all handles
-    //on return from a "native" function use 'return handle_scope.Close(returnhandle);' to keep the value handle valid in the new scope
-    
-    return 0;
+    doExit();
 }

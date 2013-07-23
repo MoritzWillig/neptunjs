@@ -10,7 +10,7 @@
 #define	MACROS_H
 
 //replaced this() by holder()
-//SetPointerInInternalField was marked depracted
+//SetPointerInInternalField was marked deprecated
 //#define SAVE_PTR(index, ptr) args.Holder()->SetPointerInInternalField(index, (void*)(ptr))
 //#define LOAD_PTR(index, type) reinterpret_cast<type>(args.Holder()->GetPointerFromInternalField(index))
 
@@ -22,6 +22,8 @@
 
 #define JS_METHOD(name) v8::Handle<v8::Value> name(const v8::Arguments& args)
 #define JS_GETTER(name) v8::Handle<v8::Value> name(v8::Local<v8::String> property, const v8::AccessorInfo &info)
+
+#define JS_FUNCTIONTEMP(name) v8::Handle<v8::Value> name(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 typedef JS_METHOD(NativeFunction);
 

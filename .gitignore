@@ -4,4 +4,6 @@ files/cache/*
 libs/boost_1_51_0
 build/
 ext/cgi/build/
+bin/neptunjs
+bin/neptunjs_cgi
 *~
