@@ -1,2 +1,0 @@
-#grant permission to all ftp actions
-a|rwx|ftp|false|
