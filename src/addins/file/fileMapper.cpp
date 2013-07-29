@@ -24,7 +24,7 @@ Persistent<Function> v8file;
 
 JS_METHOD(_constructor) {
     if (!args.IsConstructCall()) {
-        return ThrowException(String::New("Cannot call constructor as function"));
+        JS_EXCEPTION("Cannot call constructor as function");
     }
     
     InternalObject<ManagedFile>* t=InternalObject<ManagedFile>::castFrom(args.This(),"managedfile",true);
@@ -46,7 +46,7 @@ JS_METHOD(_constructor) {
         }
     }
     
-    return args.This();
+    JS_RETURN(args.This());
 }
 
 
@@ -55,12 +55,12 @@ JS_METHOD(_getFileName) {
 
     bool b;
     switch (args.Length()) {
-        case 0: return String::New(pFile->getFileName(false,false).c_str());
+        case 0: JS_RETURN(String::New(pFile->getFileName(false,false).c_str()));
         case 1: 
             b=args[0]->ToBoolean()->BooleanValue();
-            return String::New(pFile->getFileName(b,false).c_str());
+            JS_RETURN(String::New(pFile->getFileName(b,false).c_str()));
         default:
-            return v8::ThrowException(v8::Exception::Error(v8::String::New("File: invalid parameter count")));
+            JS_EXCEPTION("File: invalid parameter count");
     }
 }
 
@@ -68,28 +68,28 @@ JS_METHOD(_isInDirectory) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
 
     if (args.Length()!=1) {
-        return ThrowException(Exception::Error(String::New("Argument missing. Use file.isInDirectory(filename)")));
+        JS_EXCEPTION("Argument missing. Use file.isInDirectory(filename)");
     }
     
-    return Boolean::New(pFile->isInDirectory(*String::Utf8Value(args[0])));
+    JS_RETURN(Boolean::New(pFile->isInDirectory(*String::Utf8Value(args[0]))));
 }
 
 JS_METHOD(_loadFile) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
 
     if (args.Length()!=1) {
-        return ThrowException(Exception::Error(String::New("Argument missing. Use file.load(filename)")));
+        JS_EXCEPTION("Argument missing. Use file.load(filename)");
     }
     
     string s=*String::Utf8Value(args[0]);
     
     Permission* p=PermissionChecks::canAccept<Permission>(args.This()->Get(v8::String::New("permissions")),s);
     if (p==NULL) {
-        return ThrowException(Exception::Error(String::New("No Permissions were given for the requested action")));
+        JS_EXCEPTION("No Permissions were given for the requested action");
     }
     pFile->importFromPermission(*p);
     
-    return Boolean::New(pFile->loadFile(s));
+    JS_RETURN(Boolean::New(pFile->loadFile(s)));
 }
 
 JS_METHOD(_closeFile) {
@@ -98,92 +98,92 @@ JS_METHOD(_closeFile) {
     pFile->clearRights();
     pFile->closeFile();
     
-    return v8::Undefined();
+    JS_RETURN(v8::Undefined());
 }
 
 JS_METHOD(_isLoaded) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
 
-    return Boolean::New(pFile->isLoaded());    
+    JS_RETURN(Boolean::New(pFile->isLoaded()));    
 }
 
 JS_METHOD(_setContent) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
 
     if (args.Length()!=1) {
-        return ThrowException(Exception::Error(String::New("Argument missing. Use file.setCOntent(content)")));
+        JS_EXCEPTION("Argument missing. Use file.setCOntent(content)");
     }
     
     if (!pFile->rights.write) {
-        return ThrowException(Exception::Error(String::New("No Permissions were given for the requested action")));
+        JS_EXCEPTION("No Permissions were given for the requested action");
     }
     
     string s=*String::Utf8Value(args[0]);
     
     pFile->setContent(s);
-    return v8::Undefined();
+    JS_RETURN(v8::Undefined());
 }
 
 JS_METHOD(_getContent) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
 
     if (!pFile->rights.read) {
-        return ThrowException(Exception::Error(String::New("No Permissions were given for the requested action")));
+        JS_EXCEPTION("No Permissions were given for the requested action");
     }
     
-    return v8::String::New(pFile->getContent().c_str());
+    JS_RETURN(v8::String::New(pFile->getContent().c_str()));
 }
 
 JS_METHOD(_read) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
 
     if ((args.Length()!=2) && (args[0]->IsString()) && (args[1]->IsInt32())) {
-        return ThrowException(Exception::Error(String::New("Argument missing. Use file.read(pos,len)")));
+        JS_EXCEPTION("Argument missing. Use file.read(pos,len)");
     }
     
     if (!pFile->rights.read) {
-        return ThrowException(Exception::Error(String::New("No Permissions were given for the requested action")));
+        JS_EXCEPTION("No Permissions were given for the requested action");
     }
-    return v8::String::New(pFile->read(args[0]->Int32Value(),args[1]->Int32Value()).c_str());
+    JS_RETURN(v8::String::New(pFile->read(args[0]->Int32Value(),args[1]->Int32Value()).c_str()));
 }
 
 JS_METHOD(_write) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
 
     if ((args.Length()!=2) && (args[0]->IsString()) && (args[1]->IsInt32())) {
-        return ThrowException(Exception::Error(String::New("Argument missing. Use file.setCOntent(content)")));
+        JS_EXCEPTION("Argument missing. Use file.setCOntent(content)");
     }
     
     if (!pFile->rights.write) {
-        return ThrowException(Exception::Error(String::New("No Permissions were given for the requested action")));
+        JS_EXCEPTION("No Permissions were given for the requested action");
     }
     
     pFile->write(*String::Utf8Value(args[0]),args[1]->Int32Value());
-    return v8::Undefined();
+    JS_RETURN(v8::Undefined());
 }
 
 JS_METHOD(_getSize) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
 
     if (!pFile->rights.read) {
-        return ThrowException(Exception::Error(String::New("No Permissions were given for the requested action")));
+        JS_EXCEPTION("No Permissions were given for the requested action");
     }
-    return v8::Boolean::New(pFile->getSize());    
+    JS_RETURN(v8::Boolean::New(pFile->getSize()));
 }
 
 JS_METHOD(_append) {
     ManagedFile* pFile=InternalObject<ManagedFile>::trustedGet(args.Holder())->getObj();
     
     if ((args.Length()!=1) && (args[0]->IsString())) {
-        return ThrowException(Exception::Error(String::New("Argument missing. Use file.setCOntent(content)")));
+        JS_EXCEPTION("Argument missing. Use file.setCOntent(content)");
     }
     
     if (!pFile->rights.write) {
-        return ThrowException(Exception::Error(String::New("No Permissions were given for the requested action")));
+        JS_EXCEPTION("No Permissions were given for the requested action");
     }
     
     pFile->append(*String::Utf8Value(args[0]));
-    return v8::Undefined();    
+    JS_RETURN(v8::Undefined());
 }
 
 } //End namespace
@@ -220,11 +220,11 @@ void load() {
     //file_proto->Set(String::New("X"),FunctionTemplate::New(fileGetFileName)->GetFunction());
     
     v8::Context::GetCurrent()->Global()->Set(String::New("File"),file_templ->GetFunction()); //map file into global object
-    v8file = Persistent<Function>::New(file_templ->GetFunction());
+    v8file.Reset(Isolate::GetCurrent(),file_templ->GetFunction());
 }
 
 void unload() {
-    v8file.MakeWeak(NULL,NULL);
+    v8file.Dispose(Isolate::GetCurrent());
 }
 
 }

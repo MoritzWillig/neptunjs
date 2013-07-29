@@ -20,10 +20,15 @@
 #define SAVE_VALUE(index,val) args.Holder()->SetInternalField(index,val)
 #define LOAD_VALUE(index) args.Holder()->GetInternalField(index)
 
-#define JS_METHOD(name) v8::Handle<v8::Value> name(const v8::Arguments& args)
-#define JS_GETTER(name) v8::Handle<v8::Value> name(v8::Local<v8::String> property, const v8::AccessorInfo &info)
+#define JS_METHOD(name) void name(const v8::FunctionCallbackInfo<v8::Value>& args)
+//JS_GETTER = v8::AcessorGetterCallback
+//changes "info" into "args" to allow JS_METHOD marcos
+#define JS_GETTER(name) void name(v8::Local<v8::String> property, const v8::PropertyCallbackInfo<Value> &args)
 
-#define JS_FUNCTIONTEMP(name) v8::Handle<v8::Value> name(const v8::FunctionCallbackInfo<v8::Value>& args)
+#define JS_RETURN(value) { args.GetReturnValue().Set(value); return; }
+#define JS_EXCEPTION(string) { v8::ThrowException(v8::String::New(string)); return; }
+
+//#define JS_FUNCTIONTEMP(name) v8::Handle<v8::Value> name(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 typedef JS_METHOD(NativeFunction);
 

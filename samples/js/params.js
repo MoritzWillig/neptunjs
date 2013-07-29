@@ -205,7 +205,7 @@ function test_file() {
 
 function test_sql() {
   //SQL
-  tester.startUnit("SQL class")
+  tester.startUnit("SQL class");
 
   //Testing connection
   var msql;
@@ -293,6 +293,20 @@ function test_protection() {
   tester.endUnit();
 }
 
+function test_basic() {
+  tester.startUnit("Basic functions");
+
+  tester.test("Include extern script", function() {
+    try {
+      include("./samples/js/paramsInclude.js");
+      return true;
+    } catch(e) {
+      return false;
+    }
+  });
+  
+  tester.endUnit();
+}
 
 (function main() {
 //Inp.x+Inp.y+z;
@@ -300,6 +314,8 @@ function test_protection() {
 tester=new Tester();
 
 tester.startUnit("testing addins");
+ob.writeln("-------");
+test_basic();
 ob.writeln("-------");
 test_permissions();
 ob.writeln("-------");

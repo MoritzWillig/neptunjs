@@ -15,9 +15,9 @@ namespace {
 
 JS_METHOD(_constructor) {
     if (!args.IsConstructCall()) {
-        return v8::ThrowException(v8::String::New("Cannot call constructor as a function"));
+        JS_EXCEPTION("Cannot call constructor as a function");
     }
-    return args.This();
+    JS_RETURN(args.This());
 }
 
 }
@@ -37,11 +37,11 @@ void load() {
     it->SetInternalFieldCount(1);
     
     //v8::Context::GetCurrent()->Global()->Set(v8::String::New("AbstractNative"),perm_templ->GetFunction()); //map file into global object
-    v8abstractNative = v8::Persistent<v8::Function>::New(perm_templ->GetFunction());
+    v8abstractNative.Reset(v8::Isolate::GetCurrent(),perm_templ->GetFunction());
 }
 
 void unload() {
-    v8abstractNative.MakeWeak(NULL,NULL);
+    v8abstractNative.Dispose(v8::Isolate::GetCurrent());
 }
 
 }

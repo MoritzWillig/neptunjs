@@ -26,7 +26,7 @@ Persistent<Function> v8sql;
 
 JS_METHOD(sqlConstructor) {    
     if (!args.IsConstructCall()) {
-        return ThrowException(String::New("Cannot call constructor as function"));
+        JS_EXCEPTION("Cannot call constructor as function");
     }
     
     InternalObject<ManagedSql>* t=InternalObject<ManagedSql>::castFrom(args.This(),"managedsql",true);
@@ -47,7 +47,7 @@ JS_METHOD(sqlConstructor) {
         }
     }
     
-    return args.This();
+    JS_RETURN(args.This());
 }
 
 JS_METHOD(sqlDestructor) {
@@ -60,13 +60,13 @@ JS_METHOD(sqlDestructor) {
 JS_METHOD(sqlConnect) {
     ManagedSql* pSql=InternalObject<ManagedSql>::trustedGet(args.Holder())->getObj();
     
-    if (args.Length()!=3) { return ThrowException(String::New("False parameter count")); }
+    if (args.Length()!=3) { JS_EXCEPTION("False parameter count"); }
     
     string s=*String::Utf8Value(args[0]);
     
     Permission* p=PermissionChecks::canAccept<Permission>(args.This()->Get(v8::String::New("permissions")),s);
     if (p==NULL) {
-        return ThrowException(Exception::Error(String::New("No Permissions were given for the requested action")));
+        JS_EXCEPTION("No Permissions were given for the requested action");
     }
     pSql->importFromPermission(*p);
     
@@ -83,13 +83,11 @@ JS_METHOD(sqlConnect) {
             e.getErrorCode()<<">"<<
             e.getSQLState().c_str()<<endl;
         string sx=ss.str();
-        return ThrowException(String::New(
-                sx.c_str()
-        ));
+        
+        ThrowException(String::New(sx.c_str()));
+        return;
     }} catch(...) {
-        return ThrowException(String::New(
-                "SQL Error: Unknown exception"
-        ));
+        JS_EXCEPTION("SQL Error: Unknown exception");
     }
 }
 
@@ -97,37 +95,37 @@ JS_METHOD(sqlClose) {
     ManagedSql* pSql=InternalObject<ManagedSql>::trustedGet(args.Holder())->getObj();
     
     pSql->clearRights();
-    return v8::Boolean::New(pSql->close());
+    JS_RETURN(v8::Boolean::New(pSql->close()));
 }
 
 JS_METHOD(sqlIsCreated) {
     ManagedSql* pSql=InternalObject<ManagedSql>::trustedGet(args.Holder())->getObj();
     
-    return v8::Boolean::New(pSql->isCreated());    
+    JS_RETURN(v8::Boolean::New(pSql->isCreated()));
 }
 
 JS_METHOD(sqlIsConnected) {
     ManagedSql* pSql=InternalObject<ManagedSql>::trustedGet(args.Holder())->getObj();
     
-    return v8::Boolean::New(pSql->isConnected());
+    JS_RETURN(v8::Boolean::New(pSql->isConnected()));
 
 }
 
 JS_METHOD(sqlGetCommand) {
-    if (args.Length()!=0) { return ThrowException(String::New("False parameter count")); }
+    if (args.Length()!=0) { JS_EXCEPTION("False parameter count"); }
     
     ManagedSql* pSql=InternalObject<ManagedSql>::trustedGet(args.Holder())->getObj();
     
-    return v8::String::New(pSql->getCommand().c_str());
+    JS_RETURN(v8::String::New(pSql->getCommand().c_str()));
 }
 
 JS_METHOD(sqlSetCommand) {
-    if (args.Length()!=1) { return ThrowException(String::New("False parameter count")); }
+    if (args.Length()!=1) { JS_EXCEPTION("False parameter count"); }
     
     ManagedSql* pSql=InternalObject<ManagedSql>::trustedGet(args.Holder())->getObj();
     
     pSql->setCommand(*String::Utf8Value(args[0]));
-    return v8::Undefined();
+    JS_RETURN(v8::Undefined());
 }
 
 JS_METHOD(sqlQuery) {
@@ -145,12 +143,12 @@ JS_METHOD(sqlQuery) {
                     single=true;
                     pSql->setCommand(pSql->getCommand()+" LIMIT 1");
                 } else {
-                    if (s!="all") { return ThrowException(String::New("SQL: Unknown value. Accepted: 'all'|'line'|'single'")); }
+                    if (s!="all") { JS_EXCEPTION("SQL: Unknown value. Accepted: 'all'|'line'|'single'"); }
                 }
             }
             break;
         default:
-            return ThrowException(String::New("SQL: Too many parameters"));
+            JS_EXCEPTION("SQL: Too many parameters");
     }
     
     try {try {
@@ -159,27 +157,27 @@ JS_METHOD(sqlQuery) {
         sql::ResultSetMetaData* rsmd=res->getMetaData();
         
         if (!single) {
-            return addin_sql::mapResult(rsmd, res);
+            JS_RETURN(addin_sql::mapResult(rsmd, res));
         } else {
             res->beforeFirst();
-            if (!res->next()) { return v8::Undefined(); }
+            if (!res->next()) { JS_RETURN(v8::Undefined()); }
             
             string s=rsmd->getColumnTypeName(1);
             if (s=="BOOLEAN") {
-                    return v8::Boolean::New(res->getBoolean(1));
+                    JS_RETURN(v8::Boolean::New(res->getBoolean(1)));
             } else { if (s=="STRING") {
                 string st=res->getString(1);    
-                return v8::String::New(st.c_str());
+                JS_RETURN(v8::String::New(st.c_str()));
             } else { if (s=="INT") {
-                    return v8::Integer::New(res->getInt(1));
+                    JS_RETURN(v8::Integer::New(res->getInt(1)));
             //} else { if (s=="CONCURRENCY") {  
             //        return v8::Integer::New(static_cast<int>(res->getConcurrency(0)));
             } else { if (s=="UINT") { 
-                    return v8::Integer::NewFromUnsigned(res->getUInt(1));
+                    JS_RETURN(v8::Integer::NewFromUnsigned(res->getUInt(1)));
             } else { if (s=="DOUBLE") { 
-                    return v8::Number::New(res->getDouble(1));
+                    JS_RETURN(v8::Number::New(res->getDouble(1)));
             } else {
-                    return v8::ThrowException(v8::Exception::Error(v8::String::New("Unknown datatype")));
+                    JS_EXCEPTION("Unknown datatype");
             }}}}}//}
         }
     } catch (sql::SQLException &e) {
@@ -189,13 +187,9 @@ JS_METHOD(sqlQuery) {
             e.getErrorCode()<<">"<<
             e.getSQLState().c_str()<<endl;
         string sx=ss.str();
-        return ThrowException(String::New(
-                sx.c_str()
-        ));
+        JS_EXCEPTION(sx.c_str());
     }} catch(...) {
-        return ThrowException(String::New(
-                "SQL Error: Unknown exception"
-        ));
+        JS_EXCEPTION("SQL Error: Unknown exception");
     }
 }
 
@@ -205,12 +199,12 @@ JS_METHOD(sqlExecute) {
         pSql->setCommand(*String::Utf8Value(args[0]));
     } else {
         if (args.Length()!=0) {
-                return ThrowException(String::New("SQL: Too many parameters"));
+                JS_EXCEPTION("SQL: Too many parameters");
         }
     }
     
     try {try {
-        return v8::Boolean::New(pSql->execute());
+        JS_RETURN(v8::Boolean::New(pSql->execute()));
     } catch (sql::SQLException &e) {
         stringstream ss;
         ss<<"SQL Error: "<<__FILE__<<":"<<__FUNCTION__<<":"<<__LINE__<<endl<<
@@ -218,13 +212,9 @@ JS_METHOD(sqlExecute) {
             e.getErrorCode()<<">"<<
             e.getSQLState().c_str()<<endl;
         string sx=ss.str();
-        return ThrowException(String::New(
-                sx.c_str()
-        ));
+        JS_EXCEPTION(sx.c_str());
     }} catch(...) {
-        return ThrowException(String::New(
-                "SQL Error: Unknown exception"
-        ));
+        JS_EXCEPTION("SQL Error: Unknown exception");
     }    
 }
 
@@ -235,12 +225,12 @@ JS_METHOD(sqlUpdate) {
         pSql->setCommand(*String::Utf8Value(args[0]));
     } else {
         if (args.Length()!=0) {
-                return ThrowException(String::New("SQL: Too many parameters"));
+                JS_EXCEPTION("SQL: Too many parameters");
         }
     }
     
     try {try {
-        return v8::Integer::New(pSql->executeUpdate());
+        JS_RETURN(v8::Integer::New(pSql->executeUpdate()));
     } catch (sql::SQLException &e) {
         stringstream ss;
         ss<<"SQL Error: "<<__FILE__<<":"<<__FUNCTION__<<":"<<__LINE__<<endl<<
@@ -248,13 +238,9 @@ JS_METHOD(sqlUpdate) {
             e.getErrorCode()<<">"<<
             e.getSQLState().c_str()<<endl;
         string sx=ss.str();
-        return ThrowException(String::New(
-                sx.c_str()
-        ));
+        JS_EXCEPTION(sx.c_str());
     }} catch(...) {
-        return ThrowException(String::New(
-                "SQL Error: Unknown exception"
-        ));
+        JS_EXCEPTION("SQL Error: Unknown exception");
     }        
 }
 
@@ -304,7 +290,7 @@ void load() {
     HandleScope hs;
     
     //Create new class template
-    Handle<FunctionTemplate> sql_templ = FunctionTemplate::New(sqlConstructor);
+    v8::Local<v8::FunctionTemplate> sql_templ = v8::FunctionTemplate::New(sqlConstructor);
     sql_templ->SetClassName(String::New("SQL")); //set template name
     
     //get instance template; create space for native class pointer
@@ -330,11 +316,11 @@ void load() {
     SET_NATIVE(sql_proto,"update",sqlUpdate,sign);//int ([string])
     
     v8::Context::GetCurrent()->Global()->Set(String::New("SQL"),sql_templ->GetFunction()); //map file into global object
-    v8sql = Persistent<Function>::New(sql_templ->GetFunction());
+    v8sql.Reset(Isolate::GetCurrent(),sql_templ->GetFunction());
 }
 
 void unload() {
-    v8sql.MakeWeak(NULL,NULL);
+    v8sql.Dispose(Isolate::GetCurrent());
 }
 
 }

@@ -67,7 +67,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L'libs/v8_64bit/out/x64.release/obj.target/tools/gyp' -Wl,-Bstatic -lv8_base -lv8_snapshot -Wl,-rpath='$$ORIGIN/../libs/mysqlconnector64bit/lib' -L./libs/mysqlconnector64bit/lib -Wl,-Bdynamic -lmysqlcppconn
+LDLIBSOPTIONS=-L'libs/v8_64bit/out/x64.release/obj.target/tools/gyp' -Wl,-Bstatic -lv8_base.x64 -lv8_snapshot -Wl,-rpath='$$ORIGIN/../libs/mysqlconnector64bit/lib' -L./libs/mysqlconnector64bit/lib -Wl,-Bdynamic -lmysqlcppconn
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

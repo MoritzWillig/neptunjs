@@ -26,11 +26,14 @@
 #include "Permission.h"
 #include "internalObjects.h"
 #include "abstractNative.h"
+#include "addins/script/script.h"
+#include "mapper/PermissionChecks.h"
 
 using namespace std;
 //using namespace v8;
 
-Persistent<Context> context;
+v8::Isolate* isolate;
+v8::Handle<v8::Context> context;
 
 /**
  * Defines debugging output to be displayed
@@ -51,9 +54,8 @@ void doExit() {
     addins::unload(); //Unload addins
     
     //Delete handle scope and handles
-    //Handle<Context> context = Context::GetCurrent();
-    context.Dispose();
-    //on return from a "native" function use 'return handle_scope.Close(returnhandle);' to keep the value handle valid in the new scope
+    context->Exit();
+    v8::V8::Dispose();
     
     exit(0);
 }
@@ -115,6 +117,36 @@ v8::Handle<v8::Value> parseJson(v8::Handle<v8::Value> jsonString) {
 
 JS_METHOD(njsExit) {
     doExit();
+}
+
+JS_METHOD(njsInclude) {
+    Handle<Value> perm;
+    if (args.Length()>1) {
+        perm=args[1];
+    } else {
+        v8::Handle<v8::Value> p=v8::Context::GetCurrent()->Global()->Get(v8::String::New("permissions"));
+        if (p->IsObject()) {
+            v8::Handle<v8::Object> o=v8::Handle<v8::Object>::Cast(p);
+            v8::Handle<v8::Value> a=o->Get(String::New("file"));
+            if (!a->IsUndefined()) {
+                perm=a;
+            }
+        }
+    }
+    
+    if (args.Length()>0) {
+        v8::String::Utf8Value s(args[0]);
+        
+        Permission* p=PermissionChecks::canAccept<Permission>(perm,*s);
+        if ((p==NULL) || (p->execute==false)) {
+                JS_EXCEPTION("No execution rights were given for the requested action");
+        }
+        
+        char* code; ReadFile(*s,code);
+        Handle<String> source=v8::String::New(code);
+        Handle<Script> script=Script::Compile(source);
+        JS_RETURN(script->Run());
+    }
 }
 
 
@@ -316,10 +348,19 @@ int main(int argc, char** argv, char** envp) {
     }
     
     V8::Initialize(); //Create from snapshot or create new context
-    HandleScope handle_scope; //Creates new handle scope -> new handles are stored here
     
-    context = Context::New(); //creates new context (persistent->avoid deletion by the GC)
-    Context::Scope context_scope(context); //all code will be executed in this scope
+    //setup js v8 context
+    isolate=v8::Isolate::GetCurrent();
+    
+    HandleScope handle_scope(isolate); //Creates new handle scope -> new handles are stored here
+    context = Context::New(isolate); //creates new context (persistent->avoid deletion by the GC)
+    context->Enter();
+        
+    //get envp size   
+    v8::Handle<v8::Object> sys=v8::Object::New();
+    context->Global()->Set(String::New("system"),sys);
+    v8::Handle<v8::Object> sysenv=v8::Object::New();
+    sys->Set(String::New("env"),sysenv);
     
     debLog("<<LOADING ADDINS<<");
     addins::load(); //Load addins
@@ -343,11 +384,6 @@ int main(int argc, char** argv, char** envp) {
     //Mapping environment variables to "system.env"
     char** env;
     
-    //get envp size   
-    v8::Handle<v8::Object> sys=v8::Object::New();
-    context->Global()->Set(String::New("system"),sys);
-    v8::Handle<v8::Object> sysenv=v8::Object::New();
-    sys->Set(String::New("env"),sysenv);
     
     int i=0;
     for (env=envp; *env!=0; env++) {
@@ -372,19 +408,19 @@ int main(int argc, char** argv, char** envp) {
     //get permissions constructor
     
     
-    Handle<Function> prmc = addin_permission::v8permission;
-    //Handle<Function> prmc=Handle<Function>::Cast(addin_permission::v8permission);
+    v8::Local<v8::Function> prmc = v8::Local<v8::Function>::New(isolate,addin_permission::v8permission);
     //cout<<v->IsNull()<<v->IsFunction()<<v->IsObject()<<"\n";
 
     //Handle<Function> prmc = Handle<Function>::Cast(addin_permission::v8permission->GetConstructor());
     //Handle<Object> o=Handle<Object>::Cast(context->Global()->Get(String::New("Permission")));
     //Handle<Function> prmc = Handle<Function>::Cast(o->GetConstructor());
-
+    
     Handle<Object> global = context->Global();
     global->Set(v8::String::New("exit"),v8::FunctionTemplate::New(njsExit)->GetFunction());
+    global->Set(v8::String::New("include"),v8::FunctionTemplate::New(njsInclude)->GetFunction());
     
     //manually create an permission object
-    v8::Handle<v8::Function> an=addin_AbstractNative::v8abstractNative;
+    v8::Local<v8::Function> an=v8::Local<v8::Function>::New(isolate,addin_AbstractNative::v8abstractNative);
     Handle<Value> args[0]; Handle<Value> mpo=an->CallAsConstructor(0,args);
     InternalObject<Permission>* t=InternalObject<Permission>::castFrom(mpo,"permission",true);
     

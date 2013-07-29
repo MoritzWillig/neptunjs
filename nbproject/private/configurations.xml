@@ -36,7 +36,7 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" samples/js/params.js "-prwx|file|false|./" "-prwx|sql|false|"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}" samples/js/params.js "-prwx|file|false|./" "-prwx|sql|false|"</runcommand>
-        <rundir>/home/moritz/Projects/NeptunJS/</rundir>
+        <rundir>./</rundir>
         <buildfirst>true</buildfirst>
         <console-type>2</console-type>
         <terminal-type>0</terminal-type>

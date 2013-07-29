@@ -20,11 +20,11 @@ namespace {
 
 JS_METHOD(_constructor) {
     if (!args.IsConstructCall()) {
-        return ThrowException(String::New("Cannot call constructor as a function"));
+        JS_EXCEPTION("Cannot call constructor as a function");
     }
     
     if (args.Length()!=1) {
-        return ThrowException(String::New("Argument missing. Use new Permission(permission_instance)"));
+        JS_EXCEPTION("Argument missing. Use new Permission(permission_instance)");
     }
     
     InternalObject<Permission>* t=InternalObject<Permission>::castFrom(args.Holder(),"permission",true);
@@ -33,7 +33,7 @@ JS_METHOD(_constructor) {
     if (c==NULL) {
         InternalObject<Permission>::releaseFrom(t);
         InternalObject<Permission>::releaseFrom(c);
-        return ThrowException(String::New("Wrong argument. Use new Permission(permission_instance)"));
+        JS_EXCEPTION("Wrong argument. Use new Permission(permission_instance)");
     }
     
     t->saveObj(c->getObj());
@@ -41,20 +41,20 @@ JS_METHOD(_constructor) {
     
     //InternalObject<Permission>::releaseFrom(t); <- call in destructor!
     InternalObject<Permission>::releaseFrom(c);
-    return args.This();
+    JS_RETURN(args.This());
 }
 
 JS_METHOD(_restrictTrace) {
     Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
-    return Boolean::New(pPermission->restrictTrace(*String::Utf8Value(args[0])));
+    JS_RETURN(Boolean::New(pPermission->restrictTrace(*String::Utf8Value(args[0]))))
 }
 
 JS_METHOD(_lowerRights) {
     Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
     if (args.Length()!=3) {
-        return ThrowException(Exception::Error(String::New("Argument missing. Use permission.lowerRights(bool read, bool write, bool execute)")));
+        JS_EXCEPTION("Argument missing. Use permission.lowerRights(bool read, bool write, bool execute)");
     }
     
     bool r=args[0]->ToBoolean()->BooleanValue();
@@ -63,7 +63,7 @@ JS_METHOD(_lowerRights) {
     
     pPermission->lowerRights(r,w,x);
     
-    return v8::Undefined();
+    JS_RETURN(v8::Undefined());
 }
 
 JS_METHOD(_lockTrace) {
@@ -71,53 +71,53 @@ JS_METHOD(_lockTrace) {
     
     pPermission->isFile=true;
 
-    return v8::Undefined();
+    JS_RETURN(v8::Undefined());
 }
 
 JS_GETTER(_getTraceLocked) {
-    Permission* pPermission=InternalObject<Permission>::trustedGet(info.Holder())->getObj();
+    Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
-    return v8::Boolean::New(pPermission->isFile);
+    JS_RETURN(v8::Boolean::New(pPermission->isFile));
 }
 
 JS_GETTER(_getProtocol) {
-    Permission* pPermission=InternalObject<Permission>::trustedGet(info.Holder())->getObj();
+    Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
-    return v8::String::New(pPermission->protocol.c_str());
+    JS_RETURN(v8::String::New(pPermission->protocol.c_str()));
 }
 
 JS_GETTER(_getTrace) {
-    Permission* pPermission=InternalObject<Permission>::trustedGet(info.Holder())->getObj();
+    Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
-    return v8::String::New(pPermission->trace.c_str());
+    JS_RETURN(v8::String::New(pPermission->trace.c_str()));
 }
 
 JS_GETTER(_getRightsRead) {    
-    Permission* pPermission=InternalObject<Permission>::trustedGet(info.Holder())->getObj();
+    Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
-    return v8::Boolean::New(pPermission->read);
+    JS_RETURN(v8::Boolean::New(pPermission->read));
 }
 
 JS_GETTER(_getRightsWrite) {
-    Permission* pPermission=InternalObject<Permission>::trustedGet(info.Holder())->getObj();
+    Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
-    return v8::Boolean::New(pPermission->write);
+    JS_RETURN(v8::Boolean::New(pPermission->write));
 }
 
 JS_GETTER(_getRightsExecute) {
-    Permission* pPermission=InternalObject<Permission>::trustedGet(info.Holder())->getObj();
+    Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
-    return v8::Boolean::New(pPermission->execute);
+    JS_RETURN(v8::Boolean::New(pPermission->execute));
 }
 
 JS_METHOD(_checkPermission) {
     Permission* pPermission=InternalObject<Permission>::trustedGet(args.Holder())->getObj();
     
     if (args.Length()!=1) {
-        return ThrowException(Exception::Error(String::New("Argument missing. Use permission.checkPermission(trace)")));
+        JS_EXCEPTION("Argument missing. Use permission.checkPermission(trace)");
     }
     
-    return Boolean::New(pPermission->checkPermission(*String::Utf8Value(args[0])));
+    JS_RETURN(Boolean::New(pPermission->checkPermission(*String::Utf8Value(args[0]))));
 }
 
 } //End namespace
@@ -152,9 +152,13 @@ void load() {
     SET_NATIVE(perm_proto,"lockTrace",_lockTrace,sign);
     SET_NATIVE(perm_proto,"checkPermission",_checkPermission,sign);
     
-    it->SetAccessor(String::New("traceLocked"),_getTraceLocked,0,Handle<Value>(),
-            static_cast<v8::AccessControl>(v8::DEFAULT),
-            static_cast<v8::PropertyAttribute>(v8::ReadOnly),
+    it->SetAccessor(
+            String::New("traceLocked"),
+            _getTraceLocked,
+            0,
+            Handle<Value>(),
+            v8::DEFAULT,
+            v8::ReadOnly,
             asign);
     it->SetAccessor(String::New("protocol"),_getProtocol,0,Handle<Value>(),
             static_cast<v8::AccessControl>(v8::DEFAULT),
@@ -178,11 +182,11 @@ void load() {
             asign);
     
     v8::Context::GetCurrent()->Global()->Set(String::New("Permission"),perm_templ->GetFunction()); //map file into global object
-    v8permission = Persistent<Function>::New(perm_templ->GetFunction());
+    v8permission.Reset(Isolate::GetCurrent(),perm_templ->GetFunction());
 }
 
 void unload() {
-    v8permission.MakeWeak(NULL,NULL);
+    v8permission.Dispose(Isolate::GetCurrent());
 }
 
 }

@@ -21,20 +21,20 @@ namespace {
 
 JS_METHOD(_open) {
     OutputBuffer::open();
-    return v8::Boolean::New(true);
+    JS_RETURN(v8::Boolean::New(true));
 }
 
 JS_METHOD(_close) {
     OutputBuffer::OutputBuffer* ob = OutputBuffer::getCurrent();
-    if (ob==NULL) { return v8::ThrowException(v8::String::New("No output buffer opened")); }
+    if (ob==NULL) { JS_EXCEPTION("No output buffer opened"); }
     OutputBuffer::close();
     
-    return v8::Boolean::New(true);
+    JS_RETURN(v8::Boolean::New(true));
 }
 
 JS_METHOD(_write) {
     OutputBuffer::OutputBuffer* ob = OutputBuffer::getCurrent();
-    if (ob==NULL) { return v8::ThrowException(v8::String::New("No output buffer opened")); }
+    if (ob==NULL) { JS_EXCEPTION("No output buffer opened"); }
     
     string s="";
     for (int i=0; i<args.Length(); i++) {
@@ -43,12 +43,12 @@ JS_METHOD(_write) {
     }
     OutputBuffer::getCurrent()->write(s);
     
-    return v8::Boolean::New(true);
+    JS_RETURN(v8::Boolean::New(true));
 }
 
 JS_METHOD(_writeln) {
     OutputBuffer::OutputBuffer* ob = OutputBuffer::getCurrent();
-    if (ob==NULL) { return v8::ThrowException(v8::String::New("No output buffer opened")); }
+    if (ob==NULL) { JS_EXCEPTION("No output buffer opened"); }
     
     string s="";
     for (int i=0; i<args.Length(); i++) {
@@ -57,20 +57,20 @@ JS_METHOD(_writeln) {
     }
     OutputBuffer::getCurrent()->write(s+"\n");
     
-    return v8::Boolean::New(true);
+    JS_RETURN(v8::Boolean::New(true));
 }
 
 JS_METHOD(_read) {
     OutputBuffer::OutputBuffer* ob = OutputBuffer::getCurrent();
-    if (ob==NULL) { return v8::ThrowException(v8::String::New("No output buffer opened")); }
-    return v8::String::New(OutputBuffer::getCurrent()->read().c_str());
+    if (ob==NULL) { JS_EXCEPTION("No output buffer opened"); }
+    JS_RETURN(v8::String::New(OutputBuffer::getCurrent()->read().c_str()));
 }
 
 JS_METHOD(_flush) {
     OutputBuffer::OutputBuffer* ob = OutputBuffer::getCurrent();
-    if (ob==NULL) { return v8::ThrowException(v8::String::New("No output buffer opened")); }
+    if (ob==NULL) { JS_EXCEPTION("No output buffer opened"); }
     
-    return v8::String::New(OutputBuffer::getCurrent()->flush().c_str());
+    JS_RETURN(v8::String::New(OutputBuffer::getCurrent()->flush().c_str()));
 }
 
 } //End namespace
@@ -91,13 +91,13 @@ void load() {
     obj->Set(String::New("read"   ),FunctionTemplate::New(_read   )->GetFunction());
     obj->Set(String::New("flush"  ),FunctionTemplate::New(_flush  )->GetFunction());
     
-    //v8outputBuffer = Persistent<Object>::New(ob_templ->NewInstance());
+    //v8outputBuffer.Reset(Isolate::GetCurrent(),obj->NewInstance());
     v8::Context::GetCurrent()->Global()->Set(String::New("outputBuffer"),obj); //map into global object
     v8::Context::GetCurrent()->Global()->Set(String::New("ob"),obj); //save with short name
 }
 
 void unload() {
-    //v8outputBuffer.MakeWeak(NULL,NULL);
+    //v8outputBuffer.Dispose(Isolate::GetCurrent());
     OutputBuffer::closeAll();
 }
 

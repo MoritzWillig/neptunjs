@@ -129,7 +129,7 @@
           <linkerLibItems>
             <linkerOptionItem>-L'libs/v8_64bit/out/x64.release/obj.target/tools/gyp'</linkerOptionItem>
             <linkerOptionItem>-Wl,-Bstatic</linkerOptionItem>
-            <linkerOptionItem>-lv8_base</linkerOptionItem>
+            <linkerOptionItem>-lv8_base.x64</linkerOptionItem>
             <linkerOptionItem>-lv8_snapshot</linkerOptionItem>
             <linkerOptionItem>-Wl,-rpath='$$ORIGIN/../libs/mysqlconnector64bit/lib'</linkerOptionItem>
             <linkerOptionItem>-L./libs/mysqlconnector64bit/lib</linkerOptionItem>
