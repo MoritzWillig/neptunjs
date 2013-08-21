@@ -115,41 +115,6 @@ v8::Handle<v8::Value> parseJson(v8::Handle<v8::Value> jsonString) {
     return scope.Close(JSON_parse->Call(JSON, 1, &jsonString));
 }
 
-JS_METHOD(njsExit) {
-    doExit();
-}
-
-JS_METHOD(njsInclude) {
-    Handle<Value> perm;
-    if (args.Length()>1) {
-        perm=args[1];
-    } else {
-        v8::Handle<v8::Value> p=v8::Context::GetCurrent()->Global()->Get(v8::String::New("permissions"));
-        if (p->IsObject()) {
-            v8::Handle<v8::Object> o=v8::Handle<v8::Object>::Cast(p);
-            v8::Handle<v8::Value> a=o->Get(String::New("file"));
-            if (!a->IsUndefined()) {
-                perm=a;
-            }
-        }
-    }
-    
-    if (args.Length()>0) {
-        v8::String::Utf8Value s(args[0]);
-        
-        Permission* p=PermissionChecks::canAccept<Permission>(perm,*s);
-        if ((p==NULL) || (p->execute==false)) {
-                JS_EXCEPTION("No execution rights were given for the requested action");
-        }
-        
-        char* code; ReadFile(*s,code);
-        Handle<String> source=v8::String::New(code);
-        Handle<Script> script=Script::Compile(source);
-        JS_RETURN(script->Run());
-    }
-}
-
-
 //typedef boost::array<string,2> array2s;
 typedef vector<string> vectorns;
 typedef vector<vectorns> vector2s;
@@ -263,6 +228,50 @@ char* detag(char* str, const char* pre_repl, const char* app_repl) {
     return ret;
 }
 
+
+JS_METHOD(njsExit) {
+    doExit();
+}
+
+//include(file,[tagMode],[permission])
+JS_METHOD(njsInclude) {
+    bool tagMode=false;
+    Handle<Value> perm;
+    if (args.Length()>1) { tagMode=(args[1]->IsTrue()); }
+    if (args.Length()>2) {
+        perm=args[2];
+    } else {
+        v8::Handle<v8::Value> p=v8::Context::GetCurrent()->Global()->Get(v8::String::New("permissions"));
+        if (p->IsObject()) {
+            v8::Handle<v8::Object> o=v8::Handle<v8::Object>::Cast(p);
+            v8::Handle<v8::Value> a=o->Get(String::New("file"));
+            if (!a->IsUndefined()) {
+                perm=a;
+            }
+        }
+    }
+    
+    if (args.Length()>0) {
+        v8::String::Utf8Value s(args[0]);
+        
+        Permission* p=PermissionChecks::canAccept<Permission>(perm,*s);
+        if ((p==NULL) || (p->execute==false)) {
+                JS_EXCEPTION("No execution rights were given for the requested action");
+        }
+        
+        char* code; char* dtCode; ReadFile(*s,code);
+        if (tagMode) {
+                dtCode=detag(code,"outputBuffer.write(\"","\");");
+                delete[] code;
+        } else { dtCode=code; }
+        Handle<String> source=v8::String::New(dtCode);
+        Handle<Script> script=Script::Compile(source);
+        delete[] dtCode;
+        JS_RETURN(script->Run());
+    }
+}
+
+
 PermissionCollection pc;
 
 int main(int argc, char** argv, char** envp) {
@@ -321,7 +330,7 @@ int main(int argc, char** argv, char** envp) {
                               pm->protocol=pms[1];
                               upperCase(pms[2]);
                               pm->isFile  =(pms[2]=="TRUE");
-                              pm->trace=(pms.size()==5)?pms[3]:"";
+                              pm->trace=(pms.size()==4)?pms[3]:"";
                               pc.addPermission(pms[1],pm);
                               }
                               break;

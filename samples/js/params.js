@@ -212,7 +212,7 @@ function test_sql() {
   tester.test("Allowed connection", function() {
     try {
       msql=new SQL();
-      msql.connect("localhost","root","54tzck23");
+      msql.connect("127.0.0.1","root","54tzck23");
       if (!msql.isConnected()) { ob.writeln("Is not connected"); return false; }
       return true;
     } catch(e) {
@@ -299,6 +299,7 @@ function test_basic() {
   tester.test("Include extern script", function() {
     try {
       include("./samples/js/paramsInclude.js");
+      include("./samples/js/paramsIncludeTagMode.js",true);
       return true;
     } catch(e) {
       return false;
