@@ -2,7 +2,10 @@
 
 Project website: [http://neptunjs.de](http://neptunjs.de)<br>
 Code repository: [https://github.com/MoritzWillig/neptunjs](https://github.com/MoritzWillig/neptunjs)<br>
-Author: Moritz Willig [http://rise-of-light.de](http://rise-of-light.de)
+Author: Moritz Willig [http://rise-of-light.de](http://rise-of-light.de)<br>
+#### Developement stopped!
+Due to the high rate of v8 releases i have stopped working on this project. Other JS implementations using v8 provide a much larger module library (but up to this point in time do not allow code security features like this implementation) and are supported by an constantly active community. However the current code state is compilable and can be used to run code safely. The current code structure needs an bigger update and has to be adapted to run with a current v8 release. If you are interested in furter developement of this project you can contact me at the adresses named above.
+
 
 <br><br>
 NeptunJS is a server-side JavaScript content processor, to provide dynamically generated data resources. NeptunJS is based on the V8 engine with interfaces for file and database access.
